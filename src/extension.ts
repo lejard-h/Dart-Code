@@ -41,6 +41,7 @@ import { isFlutterProject } from "./utils";
 import { FixCodeActionProvider } from "./providers/fix_code_action_provider";
 import { AssistCodeActionProvider } from "./providers/assist_code_action_provider";
 import { LegacyDebugConfigProvider } from "./providers/legacy_debug_config_provider";
+import { FlutterOutlineProvider } from "./views/flutter_outline_view";
 
 const DART_MODE: vs.DocumentFilter[] = [{ language: "dart", scheme: "file" }];
 const HTML_MODE: vs.DocumentFilter[] = [{ language: "html", scheme: "file" }];
@@ -284,6 +285,9 @@ export function activate(context: vs.ExtensionContext) {
 			context.subscriptions.push(vs.languages.registerWorkspaceSymbolProvider(new LegacyDartWorkspaceSymbolProvider(analyzer)));
 		}
 
+		if (analyzer.capabilities.supportsFlutterOutline)
+			context.subscriptions.push(vs.window.registerTreeDataProvider("dartFlutterOutline", new FlutterOutlineProvider(analyzer)));
+
 		// Hook open/active file changes so we can set priority files with the analyzer.
 		const openFileTracker = new OpenFileTracker(analyzer);
 		context.subscriptions.push(vs.workspace.onDidOpenTextDocument((td) => openFileTracker.updatePriorityFiles()));
@@ -314,7 +318,7 @@ export function activate(context: vs.ExtensionContext) {
 	// Register misc commands.
 	context.subscriptions.push(new TypeHierarchyCommand(context, analyzer));
 
-	// Register our view providers.
+	// Register our dependency tree provider.
 	const dartPackagesProvider = new DartPackagesProvider();
 	dartPackagesProvider.setWorkspaces(util.getDartWorkspaceFolders());
 	context.subscriptions.push(dartPackagesProvider);
