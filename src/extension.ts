@@ -42,6 +42,7 @@ import { FixCodeActionProvider } from "./providers/fix_code_action_provider";
 import { AssistCodeActionProvider } from "./providers/assist_code_action_provider";
 import { LegacyDebugConfigProvider } from "./providers/legacy_debug_config_provider";
 import { FlutterOutlineProvider } from "./views/flutter_outline_view";
+import { FlutterOutlineCommands } from "./commands/flutter_outline";
 
 const DART_MODE: vs.DocumentFilter[] = [{ language: "dart", scheme: "file" }];
 const HTML_MODE: vs.DocumentFilter[] = [{ language: "html", scheme: "file" }];
@@ -311,6 +312,7 @@ export function activate(context: vs.ExtensionContext) {
 	// Register SDK commands.
 	const sdkCommands = new SdkCommands(context, sdks, analytics);
 	const debugCommands = new DebugCommands(context, analytics);
+	const flutterOutlineCommands = new FlutterOutlineCommands(context);
 
 	// Set up commands for Dart editors.
 	context.subscriptions.push(new EditCommands(context, analyzer));
